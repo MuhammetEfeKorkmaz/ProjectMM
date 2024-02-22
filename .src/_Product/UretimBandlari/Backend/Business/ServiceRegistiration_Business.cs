@@ -1,18 +1,20 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using AutoMapper;
-using Business.Abstract;
-using Business.Concrete;
+using Business.Abstract.ForOperational;
+using Business.Abstract.ForUser;
+using Business.Concrete.ForOperational;
 using Business.Concrete.ForUser;
 using Business.Mappers;
 using Castle.DynamicProxy;
-using Dal.Abstract;
-using Dal.Concrete;
+using Dal.Abstract.Contexts;
+using Dal.Concrete.Contexts;
 using FullSharedCore.Aspects.Base;
 using FullSharedCore.DataAccess.Abstract;
+using FullSharedCore.Helpers.LoadAssemblyies;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
 
 namespace Business
 {
@@ -30,16 +32,26 @@ namespace Business
 
             builder.Register(x =>
             {
-                var optionsBuilder = new DbContextOptionsBuilder<PDbContext>();
-                optionsBuilder.UseSqlServer(configuration.GetConnectionString("TestSqlServer"));
-                return new PDbContext(optionsBuilder.Options);
+                var optionsBuilder = new DbContextOptionsBuilder<PDbContextCommand>();
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("TestSqlServerCommand"));
+                return new PDbContextCommand(optionsBuilder.Options);
             }).InstancePerLifetimeScope();
+
+            builder.Register(x =>
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<PDbContextQuery>();
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("TestSqlServerQuery"));
+                return new PDbContextQuery(optionsBuilder.Options);
+            }).InstancePerLifetimeScope();
+
+ 
+
 
 
 
             //Db Operation 
-            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().As<IBaseUnitOfWork>().InstancePerLifetimeScope();
-
+            builder.RegisterType<UnitOfWorkCommand>().As<IUnitOfWorkCommand>().As<IBaseUnitOfWorkCommand>().InstancePerLifetimeScope();
+            builder.RegisterType<UnitOfWorkQuery>().As<IUnitOfWorkQuery>().As<IBaseUnitOfWorkQuery>().InstancePerLifetimeScope();
 
 
 
@@ -61,15 +73,16 @@ namespace Business
           .As<IMapper>()
           .InstancePerLifetimeScope();
 
-
- 
-
-
-
+          
 
 
             // Services 
             builder.RegisterType<KullaniciManagement>().As<IKullaniciManagement>().InstancePerLifetimeScope();
+            builder.RegisterType<OperationManagement>().As<IOperationManagement>().InstancePerLifetimeScope();
+            builder.RegisterType<TestManagement>().As<ITestManagement>().InstancePerLifetimeScope();
+
+       
+
 
 
             var proxy = new ProxyGenerationOptions()
@@ -78,12 +91,8 @@ namespace Business
                   
             };
 
-
-
-
-
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            builder.RegisterAssemblyTypes(assembly)
+             
+            builder.RegisterAssemblyTypes(GetMySolutionMyDlls.List)
                 .AsImplementedInterfaces()
                 .EnableInterfaceInterceptors(proxy)
                 .SingleInstance();

@@ -1,4 +1,6 @@
-﻿namespace DTOs.UserModels
+﻿using FullSharedResults.BaseModels;
+
+namespace DTOs.UserModels
 {
     public class SystemUserReturnDto:_DtoBaseModel
     {
@@ -7,7 +9,7 @@
             OperationClaimss = new List<OperationClaimsReturnDto>();
         }
 
-         
+        public int Id { get; set; }
 
         public string Name { get; set; }
 

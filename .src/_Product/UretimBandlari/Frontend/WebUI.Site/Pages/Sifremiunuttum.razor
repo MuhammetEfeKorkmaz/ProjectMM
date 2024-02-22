@@ -1,0 +1,17 @@
+﻿@page "/sifremi-unuttum"
+@layout LoginLayout
+
+
+
+<MudText Typo="Typo.h4" GutterBottom="true">Şifrenizimi Unuttunuz?</MudText>
+
+<MudText Typo="Typo.subtitle2">Hesabınıza bağlı e-posta adresini girin; şifrenizi sıfırlamak için bağlantı içeren bir e-posta alacaksınız.</MudText>
+
+<MudTextField T="string" Label="E-mail" Variant="Variant.Outlined" Class="my-4"></MudTextField>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="@gui" Size="Size.Large" FullWidth="true" Class="mt-3">Şifremi Sıfırla</MudButton>
+
+
+@code {
+    string gui = "/sifremi-sifirla/" + Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString();
+}

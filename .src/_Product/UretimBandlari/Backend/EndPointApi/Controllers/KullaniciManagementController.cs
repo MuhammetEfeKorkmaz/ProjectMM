@@ -1,4 +1,4 @@
-﻿using Business.Abstract;
+﻿using Business.Abstract.ForUser;
 using DTOs.UserModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,14 +9,14 @@ namespace EndPointApi.Controllers
     public class KullaniciManagementController : ControllerBase
     {
 
-        IKullaniciManagement managemet;
+        private readonly IKullaniciManagement managemet;
         public KullaniciManagementController(IKullaniciManagement _managemet)
         {
             managemet = _managemet;
         }
 
 
-
+        /*
         [HttpPost(Name = "KayitOl")]
         public async Task<IActionResult> KayitOl(SystemUserAddUpdateDto _systemUserDto, CancellationToken _token)
         {
@@ -105,7 +105,7 @@ namespace EndPointApi.Controllers
                 return BadRequest(result);
         }
 
-
+        */
 
     }
 }

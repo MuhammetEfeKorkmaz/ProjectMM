@@ -1,0 +1,76 @@
+﻿ @page "/"
+ @layout LoginLayout
+ @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+
+<MudText Typo="Typo.h4" GutterBottom="true">Giriş Yap</MudText>
+
+<MudText>Kayıtlı Değilseniz Yöneticinize Başvurun</MudText>
+
+<MudTextField  @bind-Value="@Email"  Label="E-mail" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+
+<MudTextField @bind-Value="@Password" Label="Şifre" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+
+<div Class="d-flex justify-space-between align-center"> 
+    <MudLink Href="/sifremi-unuttum">Şifrenizimi Unuttunuz</MudLink>
+</div>
+
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@btnGirisYap" Size="Size.Large" FullWidth="true">Giriş Yap</MudButton>
+
+
+@code {
+    string Password { get; set; } = "123";
+    string Email { get; set; } = "ornek.sersim.com.tr";
+
+    bool PasswordVisibility;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void TogglePasswordVisibility()
+    {
+        @if (PasswordVisibility)
+        {
+            PasswordVisibility = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            PasswordVisibility = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+
+    private void btnGirisYap()
+    {
+        if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Password))
+        {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+            Snackbar.Add("Eksik bilgi Var. Tekrar kontrol ediniz.", Severity.Error);
+            return;
+        }
+      
+
+        if (Email == "ornek.sersim.com.tr" && Password=="222")
+        {
+            NavigationManager.NavigateTo("/test-icin-normal-istasyonu-yeni-test"); 
+        }
+        if (Email == "ornek.sersim.com.tr" && Password == "111")
+        {
+            NavigationManager.NavigateTo("/test-icin-karar-istasyonu-yeni-test");
+        }
+
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Add("Mail adresiniz yada şifreniz hatalı.", Severity.Error);
+        return;
+
+    }
+
+
+
+}

@@ -1,0 +1,47 @@
+﻿@page "/test-icin-karar-istasyonu/{UrunSeriNo}/{istasyonSeriNo}"
+@using DTOs.ForOperational
+@using WebUI.Site._Data
+
+
+
+@{
+    if (dtoNormalIstasyon == null)
+    {
+        <MudText Typo="Typo.h1" Color="Color.Primary" Class="mb-4">Yükleniyor...</MudText>
+        return;
+    }
+
+}
+
+
+@if (!string.IsNullOrEmpty(dtoNormalIstasyon.Sablon_KararIstasyonuUyari))
+{
+    <MudAlert Style="height:50px;font-size: large;margin-top: 5px!important" Severity="Severity.Warning" Class="my-10" Variant="Variant.Filled" Elevation="7" ContentAlignment="HorizontalAlignment.Center" Square="false">@dtoNormalIstasyon.Sablon_KararIstasyonuUyari</MudAlert>
+}
+
+
+
+
+
+
+ 
+
+
+@code {
+
+    [Parameter]
+    public string UrunSeriNo { get; set; }
+
+    [Parameter]
+    public string istasyonSeriNo { get; set; }
+
+
+    [Inject]
+    private TestServisi servis { get; set; }
+    private DtoKararIstasyonu dtoNormalIstasyon { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        dtoNormalIstasyon = await servis.TestIcinKararIstasyonuGetir(UrunSeriNo, istasyonSeriNo);
+    }
+}

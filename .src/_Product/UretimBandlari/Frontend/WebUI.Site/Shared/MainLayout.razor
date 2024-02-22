@@ -1,0 +1,30 @@
+﻿@using WebUI.Site.Theme
+@inherits LayoutComponentBase
+<MudThemeProvider Theme="_themeManager.Theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+
+<MudLayout>
+
+     
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+            @Body
+        </MudContainer>
+    
+
+
+</MudLayout>
+
+
+@code {
+    private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
+
+    protected override void OnInitialized()
+    {
+        _themeManager.Theme = new MudBlazorAdminDashboard();
+        _themeManager.DrawerClipMode = DrawerClipMode.Always;
+        _themeManager.FontFamily = "Montserrat";
+        _themeManager.DefaultBorderRadius = 3;
+    }
+}

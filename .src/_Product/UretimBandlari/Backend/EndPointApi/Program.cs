@@ -1,13 +1,15 @@
-using Autofac.Extensions.DependencyInjection;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Business;
 using FullSharedCore;
-using FullSharedCore.Aspects.Secured.Jwt.Models;
 using FullSharedCore.Extensions.PacketCustomException;
-using FullSharedCore.Utilities.EmailSender.Models;
-using System.Linq.Expressions;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Hosting.Internal;
+
+
+
+
+
+
+
 
 
 
@@ -28,8 +30,7 @@ builder.Configuration.AddJsonFile($"appsettings.MailConfig.json", optional: true
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers().AddNewtonsoftJson(op => op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
+ 
 
 
 
@@ -43,12 +44,8 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory()).Conf
     builderx.RegisterModule(new ServiceRegistiration_Business_Autofact(builder.Configuration));
 });
 
-builder.Services.Register_Core(builder.Configuration);
-
-var app = builder.Build();
-
-
-
+builder.Services.Register_Core(builder.Configuration); 
+var app = builder.Build(); 
 ServiceRegistiration_FullSharedCore.ServiceProvider = app.Services;
 
 app.ConfigureCustomExceptionMiddleware();
@@ -93,3 +90,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
+
+
+
+
+
+
+

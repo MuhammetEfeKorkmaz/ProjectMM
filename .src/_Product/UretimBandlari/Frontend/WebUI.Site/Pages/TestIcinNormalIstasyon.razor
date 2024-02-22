@@ -1,0 +1,464 @@
+﻿@page "/test-icin-normal-istasyonu/{UrunSeriNo}/{istasyonSeriNo}"
+
+@using DTOs.ForOperational
+@using DTOs.ProductModels
+@using System.Text
+@using WebUI.Site._Data
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+
+@{
+    if (dtoNormalIstasyon == null)
+    {
+        <MudText Typo="Typo.h1" Color="Color.Primary" Class="mb-4">Yükleniyor...</MudText>
+        return;
+    }
+
+}
+
+
+@if (!string.IsNullOrEmpty(dtoNormalIstasyon.Sablon_OperatorUyarisi))
+{
+    <MudAlert Style="height:50px;font-size: large;margin-top: 5px!important" Severity="Severity.Warning" Class="my-10" Variant="Variant.Filled" Elevation="7" ContentAlignment="HorizontalAlignment.Center" Square="false">@dtoNormalIstasyon.Sablon_OperatorUyarisi</MudAlert>
+}
+
+
+
+@{
+    if (!bitti)
+    {
+        if (CurrentSoru != null)
+        {
+            var ilkItem = CurrentSoru.FirstOrDefault();
+            <MudCard>
+                <MudCardHeader style="background-color: gainsboro;">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h4">@ilkItem.SablonDetay_Soru</MudText>
+                            <br />
+                            <br />
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudGrid>
+
+                            @{
+                            if (ilkItem.SablonDetay_SoruTipi == 1)
+                            {
+                                @foreach (var item2 in CurrentSoru)
+                                {
+                                    <MudItem xs="12" sm="12">
+                                        <MudCheckBox Style="font-size:x-large!important;"
+                                                     @bind-Value="@item2.TestCevap_CevapBool"
+                                                     Color="Color.Tertiary" Size="Size.Large" Label="@item2.SablonDetay_Secenek"></MudCheckBox>
+
+                                    </MudItem>
+                                    <br />  <br /> <br />
+                                }
+
+                            }
+
+
+                            else if (ilkItem.SablonDetay_SoruTipi == 2)
+                            {
+                                <MudRadioGroup T="string" SelectedOption="@SelectedOption" SelectedOptionChanged="OnSelectedOptionChanged">
+                                    @foreach (var item2 in CurrentSoru)
+                                    {
+                                        <MudRadio Value="@(item2.SablonDetay_Secenek)" Color="Color.Success" UnCheckedColor="Color.Error">@item2.SablonDetay_Secenek</MudRadio>
+                                        <br />  <br /> <br />
+                                    }
+                                    @{
+                                        if (ilkItem.SablonDetay_ExtraVeAciklamasi > 1)
+                                        {
+                                            <MudRadio Value="@(SablonDetay_SecenekSoruTipi2Extra)" Color="Color.Success" UnCheckedColor="Color.Error">Diğer</MudRadio>
+                                            if (ilkItem.SablonDetay_ExtraVeAciklamasi > 2)
+                                            {
+                                                if (ilkItem.TestCevap_CevapExtra)
+                                                {
+                                                    if (ilkItem.SablonDetay_ExtraVeAciklamasi == 3)
+                                                    {
+                                                        <MudTextField FullWidth="true" Style="font-size:larger!important" HelperText="Lütfen Diğer Seçeneğinin Açıklamasını Yapınız. Zorunludur!" @bind-Value="@ilkItem.TestCevap_CevapExtraAciklama" Required="true" RequiredError="Yöneticiniz bu alanı girmenizi zorunlu kılmıştır." />
+                                                    }
+                                                    else if (ilkItem.SablonDetay_ExtraVeAciklamasi == 4)
+                                                    {
+                                                        <MudTextField FullWidth="true" Style="font-size:larger!important" HelperText="Lütfen Diğer Seçeneğinin Açıklamasını Yapınız." @bind-Value="@ilkItem.TestCevap_CevapExtraAciklama" Required="false" />
+                                                    }
+
+                                                }
+                                            }
+
+
+                                        }
+                                    }
+                                </MudRadioGroup>
+                            }
+                            else if (ilkItem.SablonDetay_SoruTipi == 3)
+                            {
+
+                                <MudRadioGroup T="string" SelectedOption="@SelectedOptionSoruTipi3" SelectedOptionChanged="OnSelectedOptionTip3Changed">
+                                    <MudRadio Value="@(SoruTipi3Evet)">Evet</MudRadio>
+                                    <MudRadio Value="@(SoruTipi3Hayir)">Hayır</MudRadio>
+                                </MudRadioGroup>
+
+                            }
+                            else if (ilkItem.SablonDetay_SoruTipi == 4)
+                            {
+
+                                <MudRadioGroup T="string" SelectedOption="@SelectedOptionSoruTipi4" SelectedOptionChanged="OnSelectedOptionTip4Changed">
+                                    <MudRadio Value="@(SoruTipi4Var)">Var</MudRadio>
+                                    <MudRadio Value="@(SoruTipi4Yok)">Yok</MudRadio>
+                                </MudRadioGroup>
+
+                            }
+                            else if (ilkItem.SablonDetay_SoruTipi == 5)
+                            {
+
+                                <MudTextField FullWidth="true" MaxLength="9" Style="font-size:larger!important" @bind-Value="@ilkItem.TestCevap_CevapString" HelperText="Lütfen Sadece Rakamdan Oluşan Metni Buraya Giriniz" InputType="InputType.Number" Required="true" RequiredError="Yöneticiniz bu alanı girmenizi zorunlu kılmıştır, Sadece Rakamlardan Oluşmalıdır." />
+
+                            }
+                            else if (ilkItem.SablonDetay_SoruTipi == 6)
+                            {
+                                <MudTextField FullWidth="true" MaxLength="20" Style="font-size:larger!important" @bind-Value="@ilkItem.TestCevap_CevapString" HelperText="Lütfen Sadece Rakam ve Harflerden Oluşan Metni Buraya Giriniz" InputType="InputType.Text" Required="true" RequiredError="Yöneticiniz bu alanı girmenizi zorunlu kılmıştır, Sadece Harf ve Rakamdan oluşmalıdır." />
+                            }
+
+
+
+
+
+                        }
+                        <MudItem xs="12" sm="8">
+                            <br />  <br />  <br />
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions Class="pb-4 pl-4">
+                    <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary" OnClick="SonrakiSoru" Class="ml-auto">@sonrakiSoruTitle</MudButton>
+                    </MudCardActions>
+                </MudCard>
+        }
+    }
+
+    if (bitti)
+    {
+        <MudCard>
+            <MudCardHeader style="background-color: gainsboro;">
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">Sonuc</MudText>
+                    <br />
+                    <br />
+                </CardHeaderContent>
+            </MudCardHeader>
+
+
+            <MudCardContent>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="12">
+
+                        @{
+                            if (hatalarListesi == null || hatalarListesi.Count==0)
+                            {
+                                <MudText Typo="Typo.h1" Color="Color.Primary" Class="mb-4">Sonuç Yükleniyor...</MudText>
+                                return;
+                            }
+                            else
+                            {
+                                if (hatalarListesi.FirstOrDefault().Sonuc)
+                                {
+                                    <MudText Typo="Typo.h1" Style=""> Test Başarılı.</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.h1" Style=""> Test Olumsuz.</MudText>
+                                }
+                            }
+                            
+                        }
+
+                    </MudItem>
+
+                </MudGrid>
+            </MudCardContent>
+            <MudCardActions Class="pb-4 pl-4">
+                <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary" OnClick="YeniTest" Class="ml-auto">Sonraki Teste Başla</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+
+    [Parameter]
+    public string UrunSeriNo { get; set; }
+
+    [Parameter]
+    public string istasyonSeriNo { get; set; }
+
+
+
+    bool currentSoruBasariliOldu;
+    MudForm form;
+    string sonrakiSoruTitle = "Sonraki Soru";
+
+    [Inject]
+    private TestServisi servis { get; set; }
+    private DtoNormalIstasyon dtoNormalIstasyon { get; set; }
+
+
+
+    private IEnumerable<DtoNormalIstasyonDetay> CurrentSoru { get; set; }
+    List<DtoNormalIstasyonDetay> Cevaplanmislar = new List<DtoNormalIstasyonDetay>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        dtoNormalIstasyon = await servis.TestIcinIstasyonGetir(UrunSeriNo, istasyonSeriNo);
+        GetFirstSoru();
+
+    }
+
+    private void GetFirstSoru()
+    {
+        var temp = dtoNormalIstasyon.DtoNormalIstasyonDetays.Where(x => x.SablonDetay_SoruTipi == 1).GroupBy(x => x.SablonDetay_GroupKey).FirstOrDefault();
+        if (temp != null)
+            CurrentSoru = temp.ToList();
+        else
+        {
+            temp = dtoNormalIstasyon.DtoNormalIstasyonDetays.Where(x => x.SablonDetay_SoruTipi == 2).GroupBy(x => x.SablonDetay_GroupKey).FirstOrDefault();
+            if (temp != null)
+                CurrentSoru = temp.ToList();
+            else
+            {
+                temp = dtoNormalIstasyon.DtoNormalIstasyonDetays.Where(x => x.SablonDetay_SoruTipi == 3).GroupBy(x => x.SablonDetay_GroupKey).FirstOrDefault();
+                if (temp != null)
+                    CurrentSoru = temp.ToList();
+                else
+                {
+                    temp = dtoNormalIstasyon.DtoNormalIstasyonDetays.Where(x => x.SablonDetay_SoruTipi == 4).GroupBy(x => x.SablonDetay_GroupKey).FirstOrDefault();
+                    if (temp != null)
+                        CurrentSoru = temp.ToList();
+                    else
+                    {
+                        temp = dtoNormalIstasyon.DtoNormalIstasyonDetays.Where(x => x.SablonDetay_SoruTipi == 5).GroupBy(x => x.SablonDetay_GroupKey).FirstOrDefault();
+                        if (temp != null)
+                            CurrentSoru = temp.ToList();
+                        else
+                        {
+                            temp = dtoNormalIstasyon.DtoNormalIstasyonDetays.Where(x => x.SablonDetay_SoruTipi == 6).GroupBy(x => x.SablonDetay_GroupKey).FirstOrDefault();
+                            if (temp != null)
+                                CurrentSoru = temp.ToList();
+                            else
+                            {
+                                bitti = true;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+
+
+    private bool Kontrol()
+    {
+        if (CurrentSoru.FirstOrDefault().SablonDetay_SoruTipi == 1)
+        {
+            if (CurrentSoru.Where(x => x.TestCevap_CevapBool).Count() == 0)
+                return false;
+            return true;
+        }
+        if (CurrentSoru.FirstOrDefault().SablonDetay_SoruTipi == 2)
+        {
+
+            if (CurrentSoru.Where(x =>
+                (x.TestCevap_CevapBool) ||
+                (x.SablonDetay_ExtraVeAciklamasi == 2 && x.TestCevap_CevapExtra) ||
+                (x.SablonDetay_ExtraVeAciklamasi == 3) && !string.IsNullOrEmpty(x.TestCevap_CevapExtraAciklama)).Count() == 0)
+                return false;
+            return true;
+        }
+        if (CurrentSoru.FirstOrDefault().SablonDetay_SoruTipi == 3)
+        {
+            if (CurrentSoru.Where(x => x.TestCevap_CevapBool || (!x.TestCevap_CevapBool && x.TestCevap_CevapExtraAciklama == "0")).Count() == 0)
+                return false;
+            return true;
+        }
+        if (CurrentSoru.FirstOrDefault().SablonDetay_SoruTipi == 4)
+        {
+            if (CurrentSoru.Where(x => x.TestCevap_CevapBool || (!x.TestCevap_CevapBool && x.TestCevap_CevapExtraAciklama == "0")).Count() == 0)
+                return false;
+            return true;
+        }
+        if (CurrentSoru.FirstOrDefault().SablonDetay_SoruTipi == 5)
+        {
+            if (CurrentSoru.Where(x => !string.IsNullOrEmpty(x.TestCevap_CevapString)).Count() == 0)
+                return false;
+            return true;
+        }
+        if (CurrentSoru.FirstOrDefault().SablonDetay_SoruTipi == 6)
+        {
+            if (CurrentSoru.Where(x => !string.IsNullOrEmpty(x.TestCevap_CevapString)).Count() == 0)
+                return false;
+            return true;
+        }
+        return false;
+    }
+
+
+    private async Task SonrakiSoru()
+    {
+        if (!Kontrol())
+        {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+            Snackbar.Add("Eksik bilgi Var. Tekrar kontrol ediniz.", Severity.Error);
+            return;
+        }
+        Cevaplanmislar.AddRange(CurrentSoru);
+
+        foreach (var item in CurrentSoru)
+            dtoNormalIstasyon.DtoNormalIstasyonDetays.Remove(item);
+
+
+        GetFirstSoru();
+        if (bitti)
+        {
+            sonrakiSoruTitle = "Testi Tamamla";
+            await SonucuOlustur();
+            return;
+        }
+      
+        SelectedOption = string.Empty;
+        SelectedOptionSoruTipi3 = string.Empty;
+        SelectedOptionSoruTipi4 = string.Empty;
+    }
+
+
+
+    private string SablonDetay_SecenekSoruTipi2Extra = "Diğer";
+    public string SelectedOption { get; set; }
+
+    private void OnSelectedOptionChanged(string selectedOption)
+    {
+        if (string.IsNullOrEmpty(selectedOption))
+        {
+            foreach (var item in CurrentSoru)
+            {
+                item.TestCevap_CevapString = string.Empty;
+                item.TestCevap_CevapExtra = false;
+                item.TestCevap_CevapBool = false;
+            }
+            return;
+        }
+
+        SelectedOption = selectedOption;
+        if (selectedOption == SablonDetay_SecenekSoruTipi2Extra)
+        {
+            CurrentSoru.FirstOrDefault().TestCevap_CevapExtra = true;
+            foreach (var item in CurrentSoru)
+            {
+                item.TestCevap_CevapBool = false;
+            }
+        }
+        else
+        {
+            CurrentSoru.FirstOrDefault().TestCevap_CevapString = string.Empty;
+            CurrentSoru.FirstOrDefault().TestCevap_CevapExtra = false;
+            CurrentSoru.FirstOrDefault(x => x.SablonDetay_Secenek == selectedOption).TestCevap_CevapBool = true;
+        }
+
+
+        //StateHasChanged();
+    }
+
+
+
+
+
+    private string SoruTipi3Evet = "Evet";
+    private string SoruTipi3Hayir = "Hayır";
+    public string SelectedOptionSoruTipi3 { get; set; }
+    private void OnSelectedOptionTip3Changed(string _SelectedOption3)
+    {
+        if (string.IsNullOrEmpty(_SelectedOption3))
+        {
+            foreach (var item in CurrentSoru)
+                item.TestCevap_CevapBool = false;
+            return;
+        }
+        SelectedOptionSoruTipi3 = _SelectedOption3;
+        if (_SelectedOption3 == SoruTipi3Evet)
+        {
+            CurrentSoru.FirstOrDefault().TestCevap_CevapBool = true;
+            CurrentSoru.FirstOrDefault().TestCevap_CevapExtraAciklama = string.Empty;
+        }
+        else
+        {
+            CurrentSoru.FirstOrDefault().TestCevap_CevapBool = false;
+            CurrentSoru.FirstOrDefault().TestCevap_CevapExtraAciklama = "0";
+        }
+
+    }
+
+
+
+
+    private string SoruTipi4Var = "Var";
+    private string SoruTipi4Yok = "Yok";
+    public string SelectedOptionSoruTipi4 { get; set; }
+    private void OnSelectedOptionTip4Changed(string _SelectedOption4)
+    {
+        if (string.IsNullOrEmpty(_SelectedOption4))
+        {
+            foreach (var item in CurrentSoru)
+                item.TestCevap_CevapBool = false;
+            return;
+        }
+        SelectedOptionSoruTipi4 = _SelectedOption4;
+        if (_SelectedOption4 == SoruTipi4Var)
+        {
+            CurrentSoru.FirstOrDefault().TestCevap_CevapBool = true;
+            CurrentSoru.FirstOrDefault().TestCevap_CevapExtraAciklama = string.Empty;
+        }
+        else
+        {
+            CurrentSoru.FirstOrDefault().TestCevap_CevapBool = false;
+            CurrentSoru.FirstOrDefault().TestCevap_CevapExtraAciklama = "0";
+        }
+
+    }
+
+
+    bool bitti = false;
+    List<DtoNormalIstasyonSonucOzeti> hatalarListesi = new List<DtoNormalIstasyonSonucOzeti>();
+    private async Task SonucuOlustur()
+    {
+        dtoNormalIstasyon.DtoNormalIstasyonDetays.Clear();
+        dtoNormalIstasyon.DtoNormalIstasyonDetays = Cevaplanmislar;
+        hatalarListesi = await servis.TestIcinIstasyonuYukle(dtoNormalIstasyon);
+
+    }
+
+
+    private void YeniTest()
+    {
+        NavigationManager.NavigateTo("/test-icin-normal-istasyonu-yeni-test");
+    }
+}

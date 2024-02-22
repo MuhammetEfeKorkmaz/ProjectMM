@@ -1,0 +1,38 @@
+﻿@page "/sifremi-sifirla/{guvenlik}"
+@layout LoginLayout
+
+
+
+
+<MudText Typo="Typo.h4" GutterBottom="true">Yeni Şifrenizi Giriniz</MudText>
+
+<MudTextField @bind-Value="@Password" Label="Yeni Şifre" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Class="my-4" />
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="/" Size="Size.Large" FullWidth="true" Class="mt-2">Yeni şifrenizi kaydedin</MudButton>
+
+@code {
+    [Parameter]
+    public string guvenlik { get; set; }
+
+    string Password { get; set; }
+
+    bool PasswordVisibility;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void TogglePasswordVisibility()
+    {
+        @if (PasswordVisibility)
+        {
+            PasswordVisibility = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            PasswordVisibility = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}

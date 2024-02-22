@@ -1,4 +1,6 @@
-﻿namespace DTOs.UserModels
+﻿using FullSharedResults.BaseModels;
+
+namespace DTOs.UserModels
 {
     public class SystemUserAddUpdateDto: _DtoBaseModel
     {
@@ -8,5 +10,7 @@
         public string Password { get; set; }
 
         public List<int> OperationClaimsID { get; set; }
+
+        public int Id { get; set; }
     }
 }

@@ -1,12 +1,11 @@
-﻿using FullSharedCore.SharedModels.BaseModels;
-
+﻿using FullSharedResults.BaseModels;
 namespace Entities.DbModels.UserModels
 {
     public class SystemUser : _EntitiyBaseModel
     {
         public SystemUser()
         {
-            OperationClaimss = new List<OperationClaims>();
+            OperationClaims = new HashSet<OperationClaimsSystemUser>();
         }
 
 
@@ -29,6 +28,18 @@ namespace Entities.DbModels.UserModels
         public string Password { get; set; }
 
 
-        public virtual  List<OperationClaims> OperationClaimss { get; set; }
+        public virtual  ICollection<OperationClaimsSystemUser> OperationClaims { get; set; }
     }
+
+
+
+
+
+
+
+
+
+
+
+
 }

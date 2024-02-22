@@ -4,9 +4,11 @@ using FullSharedCore.Aspects.Secured.Jwt;
 using FullSharedCore.Aspects.Secured.Jwt.Models;
 using FullSharedCore.DataAccess.Abstract;
 using FullSharedCore.DataAccess.Concrete;
+using FullSharedCore.Helpers.LoadAssemblyies;
 using FullSharedCore.Utilities.EmailSender.Abstract;
 using FullSharedCore.Utilities.EmailSender.Concrete;
 using FullSharedCore.Utilities.EmailSender.Models;
+using FullSharedCore.Utilities.HttpClientOperations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -25,10 +27,11 @@ namespace FullSharedCore
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddScoped<HttpClient>();
+            services.AddScoped<IHttpClientOperation,HttpClientOperation>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            
-
-
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(GetMySolutionMyDlls.List));
+           
             #region TokenOptionsModel  List<MailSenderBaseModel>  Config
             TokenOptionsModel tokenOptionsModel = new TokenOptionsModel();
             tokenOptionsModel.Audience = _configuration["TokenOptionsModel:Audience"];
@@ -137,7 +140,7 @@ namespace FullSharedCore
             #endregion
             #endregion
 
-             
+           
         }
 
 

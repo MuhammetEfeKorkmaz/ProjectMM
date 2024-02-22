@@ -1,0 +1,66 @@
+﻿@page "/test-icin-normal-istasyonu-yeni-test"
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudCard>
+
+
+    <MudCardHeader >
+        <CardHeaderContent>
+            <MudText Typo="Typo.h4">Lütfen Yeni Seri Okutunuz.</MudText>
+            <br />
+            <br />
+        </CardHeaderContent>
+    </MudCardHeader>
+
+
+    <MudCardContent>
+
+        <MudGrid>
+            <MudItem xs="12" sm="12">
+
+                <MudTextField FullWidth="true" Style="font-size:larger!important" @bind-Value="@urunSeri" HelperText="Lütfen Ürün Seri Nmarasını Buraya Giriniz" InputType="InputType.Text" Required="true" RequiredError="Yöneticiniz bu alanı girmenizi zorunlu kılmıştır." />
+
+
+            </MudItem>
+
+        </MudGrid>
+    </MudCardContent>
+    <MudCardActions Class="pb-4 pl-4">
+        <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary" OnClick="@YeniTest" Class="ml-auto">Teste Başla</MudButton>
+    </MudCardActions>
+
+
+
+
+
+</MudCard>
+
+
+
+
+@code {
+
+    string urunSeri = "";
+
+    //bu alan kullanıcıdan Gelecek. 
+    string istasyonSeriNo = Guid.NewGuid().ToString() + Guid.NewGuid().ToString() + Guid.NewGuid().ToString();
+
+    private void YeniTest()
+    {
+        if (string.IsNullOrEmpty(urunSeri))
+        {
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+            Snackbar.Add("Eksik bilgi Var. Tekrar kontrol ediniz.", Severity.Error);
+            return;
+        }
+
+        NavigationManager.NavigateTo("/test-icin-normal-istasyonu/" + urunSeri + "/" + istasyonSeriNo);
+
+
+
+
+    }
+
+
+}

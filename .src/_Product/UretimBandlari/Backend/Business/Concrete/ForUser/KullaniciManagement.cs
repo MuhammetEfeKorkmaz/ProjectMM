@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Business.Abstract;
+using Business.Abstract.ForUser;
 using Business.ValidationRules.ForUser;
-using Dal.Abstract;
+using Dal.Abstract.Contexts;
 using DTOs.UserModels;
 using Entities.DbModels.UserModels;
 using FullSharedCore.Aspects.Secured;
@@ -19,11 +19,11 @@ namespace Business.Concrete.ForUser
 {
     public class KullaniciManagement : IKullaniciManagement
     {
-        private IUnitOfWork uow = null;
+        private IUnitOfWorkCommand uow = null;
         private IMailSender mailSender = null;
         private ITokenHelper tokenHelper = null;
         private readonly IMapper mapper;
-        public KullaniciManagement(IUnitOfWork _uow, ITokenHelper _tokenHelper , IMailSender _mailSender, IMapper _mapper)
+        public KullaniciManagement(IUnitOfWorkCommand _uow, ITokenHelper _tokenHelper , IMailSender _mailSender, IMapper _mapper)
         { 
             uow = _uow;
             mailSender = _mailSender;
@@ -35,13 +35,12 @@ namespace Business.Concrete.ForUser
 
 
 
-
+        /*
         [ValidationAspect(typeof(RegisterValidator), ValidatorMethodType.Add,Priority =1)]
-        [TransactionAspect(Priority =2)]
+        [TransactionAspectCommandDb(Priority =2)]
         public async Task<IDataResult<SystemUserReturnDto>> KayitOl(SystemUserAddUpdateDto systemUserDto, CancellationToken token)
-        {
-
-            var DbUser = await uow.systemUserDal.GetByMail(systemUserDto.Email, token);
+        { 
+            var DbUser = await uow.systemUserDal.Where(x => x.Email.Equals(systemUserDto.Email)).FirstOrDefaultAsync(token);
             if (DbUser is not null)
                 return new ErrorDataResult<SystemUserReturnDto>(SystemMessages.UserMessages.ForUser.HaliHazirdaBumailAdresiBirKullaniciyaKayitli);
 
@@ -65,7 +64,7 @@ namespace Business.Concrete.ForUser
             var user=  mapper.Map<SystemUser>(systemUserDto);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-            user.IsActive = true;
+            user.Status = true;
             user.Password = string.Empty;
             user.OperationClaimss.AddRange(claimList);
             await uow.systemUserDal.Add(user, token);
@@ -88,7 +87,7 @@ namespace Business.Concrete.ForUser
 
 
         [ValidationAspect(typeof(LoginValidator), Priority = 1)]
-        [TransactionAspect(Priority = 2)]
+        [TransactionAspectCommandDb(Priority = 2)]
         public async Task<IDataResult<SystemUserReturnDto>> GirisYap(UserForLoginDto userForLoginDto, CancellationToken token)
         {
            
@@ -166,7 +165,7 @@ namespace Business.Concrete.ForUser
 
         //[SecuredOperationAspect("YetkiEkle", Priority = 1)]
         [ValidationAspect(typeof(ClaimsForUserValidator), Priority = 2)]
-        [TransactionAspect(Priority =3)]
+        [TransactionAspectCommandDb(Priority =3)]
         public async Task<IResult> YetkiEkle(OperationClaimAddUpdateForSystemUserDto _param, CancellationToken token)
         {
             var DbUser = await uow.systemUserDal.GetById(_param.SystemUserFID, token);
@@ -227,7 +226,7 @@ namespace Business.Concrete.ForUser
 
 
         [SecuredOperationAspect("YetkileriGetir", Priority =1)]
-        [TransactionAspect(Priority = 2)]
+        [TransactionAspectCommandDb(Priority = 2)]
         public async Task<IDataResult<IList<OperationClaims>>> YetkileriGetir(int _UserId, CancellationToken token)
         {
             IList<OperationClaims> result = new List<OperationClaims>();
@@ -262,7 +261,7 @@ namespace Business.Concrete.ForUser
 
 
         [SecuredOperationAspect("YetkiKartiEkle", Priority = 1)]
-        [TransactionAspect(Priority = 2)]
+        [TransactionAspectCommandDb(Priority = 2)]
         public async Task<IResult> YetkiKartiEkle(string _param, CancellationToken token)
         {
             var dbClaim = await uow.operationClaimsDal.Where(x => x.Name.Equals(_param)).FirstOrDefaultAsync(token);
@@ -276,7 +275,7 @@ namespace Business.Concrete.ForUser
             return new SuccessResult(SystemMessages.UserMessages.ForPublic.IslemBasarili);
         }
 
-
+        */
 
 
 

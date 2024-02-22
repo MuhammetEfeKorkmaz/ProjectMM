@@ -1,0 +1,86 @@
+﻿using Entities.DbModels.ProductModels;
+using Entities.DbModels.UserModels;
+using Microsoft.EntityFrameworkCore;
+
+namespace Dal.Concrete.Contexts
+{
+
+    public class PDbContextQuery : DbContext
+    {
+        void MyConfiguration()
+        {
+            //ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            ChangeTracker.LazyLoadingEnabled = false;
+            //ChangeTracker.AutoDetectChangesEnabled = false; 
+            // ChangeTracker.CascadeChanges();
+
+
+        }
+
+
+        public PDbContextQuery(DbContextOptions<PDbContextQuery> options) : base(options)
+        {
+            MyConfiguration();
+        }
+        public PDbContextQuery()
+        {
+            MyConfiguration();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                throw new Exception("Kullanılacak Veri Tabanı Ayarları yapılmamış.");
+            }
+
+        }
+
+        public virtual DbSet<SystemUser> SystemUser { get; set; }
+        public virtual DbSet<OperationClaims> OperationClaims { get; set; }
+
+
+
+        /*
+        public virtual DbSet<Bant> Bant { get; set; } 
+        public virtual Istasyon Istasyon { get;   set; }
+        public virtual Sablon Sablon { get;   set; }
+        public virtual SablonDetay SablonDetay { get;   set; }
+        public virtual TestCevap TestCevap { get;   set; }
+        public virtual Test Test { get;   set; }
+        public virtual TestUrunBazinda TestUrunBazinda { get;   set; }
+        public virtual TestUrunSeriBazinda TestUrunSeriBazinda { get;   set; }
+        public virtual UretimYeri UretimYeri { get;   set; }
+        public virtual UrunSeri UrunSeri { get;   set; }
+        */
+
+
+        public virtual DbSet<Ogrenci> Ogrenci { get; set; }
+        public virtual DbSet<Sinif> Sinif { get; set; }
+        public virtual DbSet<Adres> Adres { get; set; }
+        public virtual DbSet<Kitap> Kitap { get; set; }
+        public virtual DbSet<Yazar> Yazar { get; set; }
+
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<OgrenciKitap>().HasKey(x => new { x.OgrenciId, x.KitapId });
+            modelBuilder.Entity<OgrenciKitap>().HasOne(x => x.Ogrenci).WithMany(x => x.Kitaps).HasForeignKey(x => x.OgrenciId);
+            modelBuilder.Entity<OgrenciKitap>().HasOne(x => x.Kitap).WithMany(x => x.Ogrencis).HasForeignKey(x => x.KitapId);
+
+
+            modelBuilder.Entity<YazarKitap>().HasKey(x => new { x.YazarId, x.KitapId });
+            modelBuilder.Entity<YazarKitap>().HasOne(x => x.Yazar).WithMany(x => x.Kitaps).HasForeignKey(x => x.YazarId);
+            modelBuilder.Entity<YazarKitap>().HasOne(x => x.Kitap).WithMany(x => x.Yazars).HasForeignKey(x => x.KitapId);
+
+
+            modelBuilder.Entity<Ogrenci>().HasOne<Sinif>(s => s.Sinif).WithMany(g => g.Ogrencis).HasForeignKey(s => s.SinifId);
+
+            modelBuilder.Entity<Ogrenci>().HasOne(x => x.Adres).WithOne(ad => ad.Ogrenci);
+            modelBuilder.Entity<Adres>().HasOne(x => x.Ogrenci).WithOne(ad => ad.Adres);
+
+        }
+
+    }
+}
